@@ -1,6 +1,6 @@
 # Claims Letter Automation Platform
 
-An end-to-end claims automation system that integrates third-party claims data, Azure SQL, and Microsoft Power Platform to generate standardized claim correspondence (e.g., denial, acknowledgment letters).
+An end-to-end claims correspondence automation system that integrates Azure SQL, PowerShell pipelines, and Microsoft Power Platform to generate standardized claim letters for adjusters.
 
 ---
 
@@ -12,9 +12,34 @@ An end-to-end claims automation system that integrates third-party claims data, 
 
 ## Overview
 
-This project automates the process of generating claim-related letters for adjusters by integrating data pipelines, database logic, and low-code applications.
+This project automates the process of generating claim-related letters (e.g., denial, acknowledgment) by integrating data pipelines, database logic, and low-code applications.
 
-Adjusters can input a claim number and select a letter type through a Power App interface. The system retrieves claim and policy data, generates a formatted letter, and allows users to download or send it via email automatically.
+Adjusters can input a claim number and select a letter type through a Power Apps interface. The system retrieves claim and policy data, generates a formatted letter, and allows users to download or send it via email automatically.
+
+---
+
+## Application Demo
+
+### Power Apps Frontend Interface
+![PowerApp](powerapp.png)
+
+---
+
+## Application Flow
+
+Adjuster (User)  
+↓  
+Power Apps (Frontend UI)  
+↓  
+Power Automate (Workflow Trigger)  
+↓  
+Azure SQL Stored Procedure  
+↓  
+Claims & Policy Data  
+↓  
+Generated Letter  
+↓  
+Download / Email  
 
 ---
 
@@ -22,7 +47,7 @@ Adjusters can input a claim number and select a letter type through a Power App 
 
 Claims adjusters previously had to:
 - manually gather claim and policy data
-- draft letters individually
+- write letters individually
 - risk inconsistencies and errors
 
 This system was built to:
@@ -37,53 +62,33 @@ This system was built to:
 
 ### Automated Data Pipeline
 - Extracts claim and insured data from third-party systems
-- Uses PowerShell scripts to schedule and transfer data
-- Loads data into Azure SQL database
+- Uses PowerShell scripts for scheduled data transfer
+- Loads data into Azure SQL
 
-### Azure SQL Processing Layer
-- Stored procedures generate structured claim datasets
-- Complex joins across claims, policies, vehicles, and coverage data
-- Supports multiple letter types (denial, acknowledgment, etc.)
+### SQL-Based Letter Engine
+- Complex SQL queries aggregate claim, vehicle, and policy data
+- Coverage limits and policy details are dynamically constructed
+- Supports multiple letter types (denial, acknowledgment)
 
-### Letter Generation Logic
-- Dynamically constructs letter content using SQL logic
-- Includes:
-  - insured information
-  - coverage limits
-  - claim details
-  - policy language
+### Dynamic Policy Logic
+- Generates coverage descriptions based on policy data
+- Applies state-specific logic for regulatory wording
+- Builds human-readable insurance language automatically
 
 ### Power Platform Integration
-- Power Apps: frontend interface for adjusters
+- Power Apps: user interface for adjusters
 - Power Automate:
-  - triggers stored procedures
+  - triggers workflows
+  - executes stored procedures
   - generates documents
   - sends emails automatically
 
 ### End-to-End Automation
-- Input: Claim Number + Letter Type
+- Input: Claim Number + Letter Type  
 - Output:
   - generated letter
   - downloadable file
-  - optional email delivery
-
----
-
-## Architecture Flow
-
-User (Adjuster)  
-↓  
-Power Apps (Frontend UI)  
-↓  
-Power Automate (Workflow Trigger)  
-↓  
-Azure SQL Stored Procedure  
-↓  
-Claims & Policy Data (Azure SQL)  
-↓  
-Generated Letter Output  
-↓  
-Download / Email Delivery  
+  - automated email delivery  
 
 ---
 
@@ -91,23 +96,9 @@ Download / Email Delivery
 
 Third-Party Data Source  
 ↓  
-PowerShell Scheduled Scripts  
+PowerShell Scripts  
 ↓  
 Azure SQL Database  
-
----
-
-## Example SQL Logic
-
-The system uses complex SQL queries and stored procedures to assemble claim-level datasets.
-
-Example components include:
-- claim details (loss date, vehicle, driver)
-- policy coverage limits (BI, PD, deductibles)
-- insured contact information
-- dynamic coverage descriptions based on state rules
-
-(See `/sql/` folder for sample queries)
 
 ---
 
@@ -120,7 +111,8 @@ claims-letter-automation/
 ├── sql/
 │   ├── acknowledgment.sql
 │   └── denial.sql
-├── README.md
+├── .env.example
+└── README.md
 
 ---
 
@@ -128,10 +120,24 @@ claims-letter-automation/
 
 - PowerShell
 - Azure SQL
-- SQL Server (T-SQL, Stored Procedures)
+- SQL Server (T-SQL)
 - Power Automate
 - Power Apps
-- Excel / Email integration
+- Microsoft ecosystem
+
+---
+
+## Setup
+
+Configure environment variables:
+
+SOURCE_DB_CONNECTION=your_source_connection  
+AZURE_SQL_CONNECTION=your_azure_sql_connection  
+
+Run PowerShell scripts to sync data:
+
+sync_query.ps1  
+sync_denial.ps1  
 
 ---
 
@@ -139,9 +145,9 @@ claims-letter-automation/
 
 - Eliminated manual letter drafting
 - Reduced processing time significantly
-- Standardized communication across adjusters
+- Standardized claim communication
 - Reduced operational errors
-- Improved turnaround time for claim handling
+- Improved adjuster productivity
 
 ---
 
@@ -149,5 +155,5 @@ claims-letter-automation/
 
 - Add more letter templates
 - Integrate document storage (SharePoint / Blob)
-- Add audit logging and tracking
+- Add audit logging
 - Expand to additional claim workflows
